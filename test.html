@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <canvas></canvas>
+    </body>
+
+    <script>
+        const canvas = document.querySelector("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = innerWidth - 20;
+        canvas.height = innerHeight - 100;
+
+        const simMinWidth = 20;
+        const cScale = Math.min(canvas.width, canvas.height) / simMinWidth;
+        const simWidth = canvas.width / cScale;
+        const simHeight = canvas.height / cScale;
+
+        function cX(pos) {
+            return pos.x * cScale;
+        }
+
+        function cY(pos) {
+            return canvas.height - pos.y * cScale;
+        }
+
+        const gravity = {
+            x: 0,
+            y: -9.8067,
+        };
+
+        const timeStep = 1 / 60;
+
+        function createBall() {
+            return {
+                radius: 0.1 + 0.4 * Math.random(),
+                pos: {
+                    x: simWidth * Math.random(),
+                    y: simHeight * Math.random(),
+                },
+                vel: {
+                    x: 10 + 20 * Math.random(),
+                    y: 5 + 10 * Math.random(),
+                },
+                color: ["red", "green", "cyan", "yellow"][
+                    Math.floor(4 * Math.random())
+                ],
+            };
+        }
+
+        function draw(ball) {
+            ctx.fillStyle = ball.color;
+            ctx.beginPath();
+            ctx.arc(
+                cX(ball.pos),
+                cY(ball.pos),
+                cScale * ball.radius,
+                0,
+                2 * Math.PI,
+            );
+
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function processGravity(ball) {
+            ball.vel.x += gravity.x * timeStep;
+            ball.vel.y += gravity.y * timeStep;
+        }
+
+        function processVelocity(ball) {
+            ball.pos.x += ball.vel.x * timeStep;
+            ball.pos.y += ball.vel.y * timeStep;
+        }
+
+        function processWallsCollisions(ball) {
+            if (ball.pos.x < 0) {
+                ball.pos.x = 0;
+                ball.vel.x = -ball.vel.x;
+            }
+            if (ball.pos.x > simWidth) {
+                ball.pos.x = simWidth;
+                ball.vel.x = -ball.vel.x;
+            }
+
+            if (ball.pos.y < 0) {
+                ball.pos.y = 0;
+                ball.vel.y = -ball.vel.y;
+            }
+            if (ball.pos.y > simHeight) {
+                ball.pos.y = simHeight;
+                ball.vel.y = -ball.vel.y;
+            }
+        }
+
+        const balls = [...Array(100).keys()].map(createBall);
+
+        function simulate(ball) {
+            processGravity(ball);
+
+            processVelocity(ball);
+
+            processWallsCollisions(ball);
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            balls.map(simulate);
+            balls.map(draw);
+            requestAnimationFrame(update);
+        }
+
+        update();
+    </script>
+</html>

@@ -1,17 +1,22 @@
-import { Ball } from "./ball";
-import { Physics } from "./physics";
-import { Render } from "./render";
-import type { GameObject, PhysicsObject } from "./types";
-import { Vector2 } from "./utils/vector";
-import { Velocity } from "./velocity";
+import { Controls } from "./component/controls";
+import { Physics } from "./component/physics";
+import { Player } from "./component/player";
+import { Render } from "./component/render";
+import { Ball } from "./entity/ball";
+import { Vector2 } from "./lib/vector";
+import type { GameObject, PhysicsObject } from "./utils/types";
 
 export class PongGame {
   private simulationSize = 20;
-  private cScale: number;
+  private cScale!: number;
+  private simulativeWidth!: number;
+  private simulativeHeight!: number;
   private timeStep = 1 / 60;
 
   private render!: Render;
   private physics!: Physics;
+  private controls!: Controls;
+  private player!: Player;
 
   private physicsObjects!: Array<PhysicsObject>;
   private staticObjects!: Array<GameObject>;
@@ -33,37 +38,28 @@ export class PongGame {
 
     this.cScale = Math.min(canvas.width, canvas.height) / this.simulationSize;
 
+    this.simulativeWidth = width / this.cScale;
+    this.simulativeHeight = height / this.cScale;
+
     this.render = new Render(ctx, this.cScale, width, height);
     this.physics = new Physics(
       this.timeStep,
-      width / this.cScale,
-      height / this.cScale,
+      this.simulativeWidth,
+      this.simulativeHeight,
     );
-    this.physicsObjects = [...Array(50).keys()].map(() =>
-      this.createBall(width, height),
-    );
-    this.staticObjects = [];
-  }
+    this.controls = new Controls(canvas);
 
-  private createBall(width: number, height: number) {
-    return new Ball(
-      0.2,
-      new Vector2(width / this.cScale / 2, height / this.cScale / 2),
-      new Velocity(10 + 5 * Math.random(), 10 * Math.random()),
-      this.randomColor,
+    this.player = new Player(
+      new Vector2(
+        this.simulativeWidth - this.simulativeWidth * 0.1,
+        this.simulativeHeight / 2,
+      ),
     );
-  }
 
-  private get randomColor(): string {
-    return (
-      "hsl(" +
-      360 * Math.random() +
-      "," +
-      (225 + 70 * Math.random()) +
-      "%," +
-      (85 + 10 * Math.random()) +
-      "%)"
-    );
+    this.controls.registerPlayer(this.player);
+
+    this.physicsObjects = [...Array(50).keys()].map(Ball.createRandom);
+    this.staticObjects = [this.player];
   }
 
   get objects() {

@@ -1,5 +1,6 @@
-import { Ball } from "./ball";
-import type { GameObject } from "./types";
+import { Ball } from "../entity/ball";
+import type { GameObject } from "../utils/types";
+import { Player } from "./player";
 
 type Drawable = GameObject;
 
@@ -34,9 +35,24 @@ export class Render {
     this.ctx.fill();
   }
 
+  private drawPlayer(player: Player) {
+    this.ctx.beginPath();
+    this.ctx.rect(
+      player.position.x,
+      player.position.y,
+      player.width,
+      player.height,
+    );
+    this.ctx.stroke();
+  }
+
   draw(obj: Drawable) {
     if (obj instanceof Ball) {
       this.drawBall(obj);
+    }
+
+    if (obj instanceof Player) {
+      this.drawPlayer(obj);
     }
   }
 

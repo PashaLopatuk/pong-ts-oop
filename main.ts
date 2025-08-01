@@ -1,4 +1,4 @@
-import { PongGame } from "./game";
+import { PongGame } from "./src/game";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <canvas></canvas>

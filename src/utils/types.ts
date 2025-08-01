@@ -1,5 +1,5 @@
-import type { Vector2 } from "./utils/vector";
-import type { Velocity } from "./velocity";
+import type { Vector2 } from "../lib/vector";
+import type { Velocity } from "../lib/velocity";
 
 export interface GameObject {
   position: Vector2

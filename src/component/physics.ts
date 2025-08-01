@@ -1,7 +1,7 @@
-import { Ball } from "./ball";
-import type { PhysicsObject } from "./types";
-import { add } from "./utils/vector";
-import { Velocity } from "./velocity";
+import { Ball } from "../entity/ball";
+import { add } from "../lib/vector";
+import { Velocity } from "../lib/velocity";
+import type { PhysicsObject } from "../utils/types";
 
 export class Physics {
   public gravityVelocity = new Velocity(0, -9.8067);
@@ -51,4 +51,6 @@ export class Physics {
       ball.velocity.y = -ball.velocity.y;
     }
   }
+  
+
 }
