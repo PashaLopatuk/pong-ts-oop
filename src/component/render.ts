@@ -36,17 +36,34 @@ export class Render {
   }
 
   private drawPlayer(player: Player) {
+    console.log(player.position.x, player.position.y);
     this.ctx.beginPath();
     this.ctx.rect(
-      player.position.x,
-      player.position.y,
-      player.width,
-      player.height,
+      this.scaleX(player.position.x),
+      this.scaleY(player.position.y),
+      this.scaleX(player.width),
+      this.scaleY(player.height),
     );
+    this.ctx.fill();
     this.ctx.stroke();
+    this.ctx.closePath();
+  }
+
+  private drawCenter(obj: Drawable) {
+    // this.ctx.beginPath();
+    // this.ctx.fillStyle = "red";
+    // this.ctx.rect(
+    //   this.scaleX(obj.position.x),
+    //   this.scaleY(obj.position.x),
+    //   this.scaleX(1),
+    //   this.scaleY(1),
+    // );
+    // this.ctx.fill();
+    // this.ctx.closePath();
   }
 
   draw(obj: Drawable) {
+    this.drawCenter(obj);
     if (obj instanceof Ball) {
       this.drawBall(obj);
     }

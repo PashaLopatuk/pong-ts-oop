@@ -41,25 +41,25 @@ export class PongGame {
     this.simulativeWidth = width / this.cScale;
     this.simulativeHeight = height / this.cScale;
 
-    this.render = new Render(ctx, this.cScale, width, height);
-    this.physics = new Physics(
-      this.timeStep,
-      this.simulativeWidth,
-      this.simulativeHeight,
-    );
-    this.controls = new Controls(canvas);
-
     this.player = new Player(
       new Vector2(
         this.simulativeWidth - this.simulativeWidth * 0.1,
         this.simulativeHeight / 2,
       ),
     );
-
-    this.controls.registerPlayer(this.player);
-
     this.physicsObjects = [...Array(50).keys()].map(Ball.createRandom);
     this.staticObjects = [this.player];
+
+    this.render = new Render(ctx, this.cScale, width, height);
+    this.physics = new Physics(
+      this.timeStep,
+      this.simulativeWidth,
+      this.simulativeHeight,
+      this.objects,
+    );
+    this.controls = new Controls(canvas, this.timeStep);
+
+    this.controls.registerPlayer(this.player);
   }
 
   get objects() {
@@ -67,6 +67,7 @@ export class PongGame {
   }
 
   simulate() {
+    this.physics.processObjectsCollision()
     for (const obj of this.physicsObjects) {
       this.physics.process(obj);
     }

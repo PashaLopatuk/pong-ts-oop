@@ -1,7 +1,8 @@
 import { Ball } from "../entity/ball";
 import { add } from "../lib/vector";
 import { Velocity } from "../lib/velocity";
-import type { PhysicsObject } from "../utils/types";
+import type { GameObject, PhysicsObject } from "../utils/types";
+import { CircleHitbox } from "./hitbox/circle-hitbox";
 
 export class Physics {
   public gravityVelocity = new Velocity(0, -9.8067);
@@ -10,6 +11,7 @@ export class Physics {
     private timeStep: number,
     private boundingWidth: number,
     private boundingHeight: number,
+    private objects: Array<GameObject>,
   ) {}
 
   private get gravityVelocityFrame() {
@@ -51,6 +53,27 @@ export class Physics {
       ball.velocity.y = -ball.velocity.y;
     }
   }
-  
 
+  public processObjectsCollision() {
+    for (const targetObject of this.objects) {
+      for (const collisionObject of this.objects) {
+        if (
+          targetObject.hitbox instanceof CircleHitbox &&
+          collisionObject.hitbox instanceof CircleHitbox
+        ) {
+          if (
+            Math.abs(targetObject.position.x - collisionObject.position.x) <
+            targetObject.hitbox.radius + collisionObject.hitbox.radius
+          ) {
+            console.log("collision!");
+            targetObject.velocity.x = -targetObject.velocity.x;
+            targetObject.velocity.y = -targetObject.velocity.y;
+
+            collisionObject.velocity.x = -collisionObject.velocity.x;
+            collisionObject.velocity.y = -collisionObject.velocity.y;
+          }
+        }
+      }
+    }
+  }
 }

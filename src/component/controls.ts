@@ -4,9 +4,12 @@ import type { GameObject } from "../utils/types";
 export class Controls {
   player?: GameObject;
 
-  playerSpeed = 0.5;
+  playerSpeed = 20;
 
-  constructor(private screen: HTMLElement) {
+  constructor(
+    private screen: HTMLElement,
+    private timeStep: number,
+  ) {
     this.initEventListeners();
   }
 
@@ -18,17 +21,21 @@ export class Controls {
     if (!this.player) return;
 
     this.player.position.x += direction.x;
-    this.player.position.x += direction.y;
+    this.player.position.y += direction.y;
   }
 
   private processKey(key: string) {
     switch (key) {
       case "ArrowUp": {
-        this.processPlayerMovement(new Vector2(0, this.playerSpeed));
+        this.processPlayerMovement(
+          new Vector2(0, this.playerSpeed * this.timeStep),
+        );
         break;
       }
       case "ArrowDown": {
-        this.processPlayerMovement(new Vector2(0, -this.playerSpeed));
+        this.processPlayerMovement(
+          new Vector2(0, -this.playerSpeed * this.timeStep),
+        );
         break;
       }
       case "ArrowLeft": {
@@ -40,12 +47,12 @@ export class Controls {
     }
   }
 
+  private processEvent(event: KeyboardEvent) {
+    console.log(event.key);
+    this.processKey(event.key);
+  }
+
   private initEventListeners() {
-    this.screen.addEventListener(
-      "keypress",
-      ((event) => {
-        this.processKey(event.key);
-      }).bind(this),
-    );
+    document.addEventListener("keydown", this.processEvent.bind(this));
   }
 }
